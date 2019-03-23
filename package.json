@@ -1,0 +1,26 @@
+{
+  "name": "capstone",
+  "version": "1.0.0",
+  "description": "This is a simple project that intends to assess learners on the concepts of Object-Oriented",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/landrykapela/capstone.git"
+  },
+  "keywords": [
+    "capstone",
+    "landrykapela",
+    "landry",
+    "nodejs",
+    "alc",
+    "oop"
+  ],
+  "author": "Landry Kapela",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
