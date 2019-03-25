@@ -33,35 +33,38 @@ exports.createTable = (con,data) =>{
 exports.findSingleRecord = (con,options,model) =>{
 	// options: {conditions:[{variable: "email", operation: "=", value: "landry@gmail.com"}]}
 	con.connect(function(error){
-		// if(error) throw error;
-		let table = model;
-		let conditions = options.conditions;
+		return new Promise((resolve,reject)=>{
+			let table = model;
+			let conditions = options.conditions;
 
-		let sql = "SELECT * FROM " +table+" WHERE ";
-		for(let i=0; i< conditions.length; i++){
-			let cond = "(" + conditions[i].variable + conditions[i].operation + (typeof conditions[i].value === 'string' ? "'"+conditions[i].value+"'" : conditions[i].value) + ")";
-			let next = conditions[i+1];
-			if(next){
-					console.log(next);
-				if(next.required){
-					if(i == 0) cond += " AND ";
-					else cond = " AND " + cond
+			let sql = "SELECT * FROM " +table+" WHERE ";
+			for(let i=0; i< conditions.length; i++){
+				let cond = "(" + conditions[i].variable + conditions[i].operation + (typeof conditions[i].value === 'string' ? "'"+conditions[i].value+"'" : conditions[i].value) + ")";
+				let next = conditions[i+1];
+				if(next){
+						console.log(next);
+					if(next.required){
+						if(i == 0) cond += " AND ";
+						else cond = " AND " + cond
+					}
+					else {
+						if( i== 0) cond += " OR ";
+						else cond = " OR " + cond;
+					}
 				}
-				else {
-					if( i== 0) cond += " OR ";
-					else cond = " OR " + cond;
-				}
+				sql += cond;
 			}
-			sql += cond;
-		}
-		sql += " LIMIT 1";
-		console.log("find sql: "+sql);
-		con.query(sql,(error,result,fields)=>{
-			// if(error) throw error;
-			console.log(result);
-			// return result;
+			sql += " LIMIT 1";
+			console.log("find sql: "+sql);
+			con.query(sql,(error,result,fields)=>{
+				// if(error) throw error;
+				console.log(result);
+				// return result;
+			});
 		});
 	});
+		// if(error) throw error;
+		
 };
 
 exports.insertSingleRecord = (con,table,data) =>{
