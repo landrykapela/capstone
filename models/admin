@@ -8,9 +8,11 @@ class Admin extends Moderator {
 		this.canDeleteComment = this.canDeleteComment.bind(this);
 		
 	}
-	canDeleteComment(){
+	canEditAnyComment(){
 		return true;
 	}
-
+	canDeleteAnyComment(){
+		return true;
+	}
 }
 export default Admin;

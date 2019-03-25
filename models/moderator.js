@@ -8,7 +8,7 @@ class Moderator extends User {
 		this.canEditComment = this.canEditComment.bind(this);
 		
 	}
-	canEditComment(){
+	canDeleteComment(){
 		return true;
 	}
 
