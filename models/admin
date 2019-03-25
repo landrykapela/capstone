@@ -1,0 +1,16 @@
+const Moderator = require('./moderator');
+
+//admin class inherits from moderator
+class Admin extends Moderator {
+	constructor(data){
+	super(data);
+		
+		this.canDeleteComment = this.canDeleteComment.bind(this);
+		
+	}
+	canDeleteComment(){
+		return true;
+	}
+
+}
+export default Admin;
