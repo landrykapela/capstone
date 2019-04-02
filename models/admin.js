@@ -4,15 +4,13 @@ const Moderator = require('./moderator');
 class Admin extends Moderator {
 	constructor(data){
 	super(data);
-		
-		this.canDeleteComment = this.canDeleteComment.bind(this);
-		
+
+		this.canEditAnyComment = this.canEditAnyComment.bind(this);
+
 	}
 	canEditAnyComment(){
 		return true;
 	}
-	canDeleteAnyComment(){
-		return true;
-	}
+
 }
 export default Admin;

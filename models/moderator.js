@@ -4,13 +4,13 @@ const User = require('./user');
 class Moderator extends User {
 	constructor(data){
 	super(data);
-		
-		this.canEditComment = this.canEditComment.bind(this);
-		
+
+		this.canDeleteAnyComment = this.canDeleteAnyComment.bind(this);
+
 	}
-	canDeleteComment(){
+	canDeleteAnyComment(){
 		return true;
 	}
 
 }
-export default Moderator;
+module.exports = Moderator;

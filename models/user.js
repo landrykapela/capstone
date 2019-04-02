@@ -1,21 +1,21 @@
 //main class definition for user
 class User {
 	constructor(data){
-		var _id = data.userId;
-		var email = data.email;
-		var role  = data.role;
-		var password = data.password;
-		var lastLoggedInAt = data.lastLoggedInAt;
+		this._id = data.id;
+		this.email = data.email;
+		this.role  = data.role;
+		this.password = data.password;
+		this.lastLoggedInAt = data.lastLoggedInAt;
 
 		//bind methods to object context
-		this.getEmail = this.getEmail.bind(this);
-		this.setEmail = this.setEmail.bind(this);
-		this.getRole = this.getRole.bind(this);
-		this.setRole = this.setRole.bind(this);
-		this.getPassword = this.getPassword.bind(this);
-		this.setPassword = this.setPassword.bind(this);
-		this.setLastLoggedInAt = this.setLastLoggedInAt.bind(this);
-		this.getLastLoggedInAt = this.getLastLoggedInAt.bind(this);
+		// this.getEmail = this.getEmail.bind(this);
+		// this.setEmail = this.setEmail.bind(this);
+		// this.getRole = this.getRole.bind(this);
+		// this.setRole = this.setRole.bind(this);
+		// this.getPassword = this.getPassword.bind(this);
+		// this.setPassword = this.setPassword.bind(this);
+		// this.setLastLoggedInAt = this.setLastLoggedInAt.bind(this);
+		// this.getLastLoggedInAt = this.getLastLoggedInAt.bind(this);
 	}
 	login(){
 		this.setLastLoggedInAt(+ new Date());
@@ -58,4 +58,4 @@ class User {
 	}
 
 }
-export default User;
+module.exports = User;

@@ -9,6 +9,7 @@ class Comment{
 		// var editor = data.editor
 
 		this.isReply = this.isReply.bind(this);
+
 	}
 
 	isReply(){
@@ -17,4 +18,4 @@ class Comment{
 		}
 	}
 }
-export default Comment;
+module.exports = Comment;
