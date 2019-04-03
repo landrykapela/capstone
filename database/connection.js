@@ -3,46 +3,142 @@ const db = require('mysql');
 //initiate connection to mysql database
 exports.connect = () =>{
 	return con = db.createConnection({host: "localhost", user: "root", password: "root", database: "capstone_db", port: 8889});
-
 };
-exports.createTable = (con,data) =>{
-	con.connect(function(error){
-		if(error) throw error;
-		let tableName = data.tableName;
-		let fields = data.fields;
-		let sql = "CREATE TABLE IF NOT EXISTS " + tableName + "(id int(10) auto_increment primary key, ";
-		for(let i=0; i< fields.length; i++){
-			let length = (fields[i].field_size !== undefined) ? "("+fields[i].field_size +")" : "" ;
-			let required = (fields[i].required === true) ? " NOT NULL" : "";
-			let unique  = (fields[i].unique !== undefined) ? ", UNIQUE KEY unique_" + fields[i].name+"("+fields[i].name+")" : "";
-			let field = fields[i].name + " " + fields[i].type + length + required + unique;
-			if(i < fields.length -1) field += ",";
-			sql += field;
-		}
-		sql += ")";
-		console.log("Query: "+sql);
-		con.query("DROP TABLE IF EXISTS "+tableName,(error,result)=>{
-			con.query(sql,(error, result)=>{
-				if(error){
-					throw error;
-				}
-				console.log(result);
-			});
+
+//check if table EXISTS
+exports.tableExists = (con,tableName) =>{
+	return new Promise((resolve,reject)=>{
+		let sql = "SELECT * FROM information_schema.tables WHERE table_schema = 'capstone_db' AND table_name = '" + tableName +"' LIMIT 1";
+		console.log(sql);
+		con.query(sql, (error,result)=>{
+			if(error) reject(error);
+			else{
+				if(result.length < 1) reject("Table not found");
+				else resolve(result);
+			}
+
 		});
-
 	});
+}
+exports.createTable = (con,data) =>{
+	return new Promise((resolve,reject)=>{
 
+			let tableName = data.tableName;
+			let fields = data.fields;
+			let sql = "CREATE TABLE IF NOT EXISTS " + tableName + "(id int(10) auto_increment primary key, ";
+			for(let i=0; i< fields.length; i++){
+				let length = (fields[i].field_size !== undefined) ? "("+fields[i].field_size +")" : "" ;
+				let required = (fields[i].required === true) ? " NOT NULL" : "";
+				let unique  = (fields[i].unique !== undefined) ? ", UNIQUE KEY unique_" + fields[i].name+"("+fields[i].name+")" : "";
+				let field = fields[i].name + " " + fields[i].type + length + required + unique;
+				if(i < fields.length -1) field += ",";
+				sql += field;
+			}
+			sql += ")";
+				con.query(sql,(error, result)=>{
+					if(!error){
+						resolve(result);
+					}
+					else{
+						reject(error);
+					}
+				});
+		});
 };
-exports.findSingleRecord = (con,options,model) =>{
+
+//get all records in a table
+exports.findAllRecords = (con,table,fields,options) => {
+	return new Promise((resolve,reject)=>{
+
+			let field_string = "";
+			if(fields.length == 0) field_string += " * ";
+			else{
+				for(let i=0; i < fields.length; i++){
+					if(fields.length > 1 && i < (fields.length -1)){
+						field_string += fields[i] + ", ";
+					}
+					else field_string += fields[i];
+				}
+			}
+			let option_string = "";
+			if(options){
+				if(options.order_by){
+					option_string += " ORDER BY "+ options.order_by;
+				}
+				if(options.order){
+					option_string += " "+ options.order;
+				}
+				if(options.limit){
+					option_string += " LIMIT "+ options.limit;
+			}
+			let sql = "SELECT " + field_string + " FROM " + table + option_string;
+			con.query(sql,(error,result)=>{
+				if(error) reject(error);
+				else resolve(result);
+
+			});
+		}
+	});
+}
+//get multiple records in a table
+exports.findManyRecords = (con,table,fields,options,conditions) => {
+	return new Promise((resolve,reject)=>{
+
+			let field_string = "";
+			if(fields.length == 0) field_string += " * ";
+			else{
+				for(let i=0; i < fields.length; i++){
+					if(fields.length > 1 && i < (fields.length -1)){
+						field_string += fields[i] + ", ";
+					}
+					else field_string += fields[i];
+				}
+			}
+			//check order options
+			let option_string = "";
+			if(options){
+				if(options.order_by){
+					option_string += " ORDER BY "+ options.order_by;
+				}
+				if(options.order){
+					option_string += " "+ options.order;
+				}
+				if(options.limit){
+					option_string += " LIMIT "+ options.limit;
+				}
+			}
+			//check conditions
+			let condition_string = " ";
+			if(conditions){
+				for(let i=0; i< conditions.length; i++){
+					condition_string += "(" + conditions[i].variable + conditions[i].operation + (typeof conditions[i].value === 'string' ? "'" + conditions[i].value + "'" : conditions[i].value) + ")";
+					let next = conditions[i+1];
+					if(next){
+							console.log(next);
+						if(next.required){
+							if(i == 0) condition_string += " AND ";
+							else condition_string = " AND " + condition_string;
+						}
+						else {
+							if( i== 0) condition_string += " OR ";
+							else condition_string = " OR " + condition_string;
+						}
+					}
+			}
+			let sql = "SELECT " + field_string + " FROM " + table + " WHERE " + condition_string + option_string;
+			con.query(sql,(error,result)=>{
+				if(error) reject(error);
+				else resolve(result);
+			});
+		}
+	});
+}
+
+//find single record with given options
+exports.findSingleRecord = (con,table,conditions) =>{
 	// options: {conditions:[{variable: "email", operation: "=", value: "landry@gmail.com"}]}
 
 		return new Promise((resolve,reject)=>{
-			con.connect(function(error){
-				if(error){
-					reject(error);
-				}
-				let table = model;
-				let conditions = options.conditions;
 
 				let sql = "SELECT * FROM " +table+" WHERE ";
 				for(let i=0; i< conditions.length; i++){
@@ -62,13 +158,11 @@ exports.findSingleRecord = (con,options,model) =>{
 					sql += cond;
 				}
 				sql += " LIMIT 1";
-				console.log("find sql: "+sql);
+
 				con.query(sql,(error,result,fields)=>{
 					 if(error) reject(error);
-					 console.log(result);
-					 resolve(result);
+					 else resolve(result);
 				});
-			});
 		});
 		// if(error) throw error;
 
@@ -76,10 +170,7 @@ exports.findSingleRecord = (con,options,model) =>{
 
 exports.insertSingleRecord = (con,table,data) =>{
 	return new Promise((resolve,reject)=>{
-		con.connect((error)=>{
-			if(error){
-				reject(error);
-			}
+
 			let availableFields = Object.keys(data);
 			let availableValues = Object.values(data);
 			let values = " (";
@@ -98,18 +189,16 @@ exports.insertSingleRecord = (con,table,data) =>{
 			}
 			let sql = "INSERT INTO " + table + fields + "VALUES " + values;
 
-			con.query(sql,(result)=>{
-			resolve(result);
+			con.query(sql,(error,result)=>{
+				if(error) reject(error);
+				resolve(result);
 			});
 		});
-	});
-
 };
 
-exports.updateRecord = (con, table,data,condition) =>{
+exports.updateRecord = (con, table,data,conditions) =>{
 	return new Promise((resolve,reject)=>{
-		con.connect((error)=>{
-			if(error) reject(error);
+
 			let sql = "UPDATE " + table + " SET ";
 			//values to set
 			let x = "";
@@ -125,24 +214,56 @@ exports.updateRecord = (con, table,data,condition) =>{
 					 x += keys[k] + "=" + values[k];
 				}
 			}
-			let condition_keys = Object.keys(condition[0]);
-			let condition_values = Object.values(condition[0]);
-			let operations = condition[1];
-			let logics = condition[2];
-			for(let p=0; p < condition_keys.length;p++){
-				if(p == 0){
-					y += condition_keys[p] + operations[p] + condition_values[p];
+			for(let i=0; i< conditions.length; i++){
+				let cond = "(" + conditions[i].variable + conditions[i].operation + (typeof conditions[i].value === 'string' ? "'"+conditions[i].value+"'" : conditions[i].value) + ")";
+				let next = conditions[i+1];
+				if(next){
+						console.log(next);
+					if(next.required){
+						if(i == 0) cond += " AND ";
+						else cond = " AND " + cond
+					}
+					else {
+						if( i== 0) cond += " OR ";
+						else cond = " OR " + cond;
+					}
 				}
-				else if (p > 0) {
-					y += " " + logics[p] + " " + condition_keys[p] + operations[p] + condition_values[p];
-				}
+				y += cond;
 			}
 			sql += x;
 			sql += " WHERE " + y;
 			con.query(sql,(result)=>{
-
 				resolve(result);
-			})
+			});
+		});
+};
+
+//delete single record
+exports.deleteOneRecord = (con, table, conditions) =>{
+
+	return new Promise((resolve,reject)=>{
+		let y = " WHERE ";
+		for(let i=0; i< conditions.length; i++){
+			let cond = "(" + conditions[i].variable + conditions[i].operation + (typeof conditions[i].value === 'string' ? "'"+conditions[i].value+"'" : conditions[i].value) + ")";
+			let next = conditions[i+1];
+			if(next){
+					console.log(next);
+				if(next.required){
+					if(i == 0) cond += " AND ";
+					else cond = " AND " + cond
+				}
+				else {
+					if( i== 0) cond += " OR ";
+					else cond = " OR " + cond;
+				}
+			}
+			y += cond;
+		}
+		let sql = "DELETE FROM " + table + y;
+		con.query(sql,(error,result)=>{
+			if(error) reject(error);
+			else resolve(result);
 		});
 	});
+
 }

@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const db = require('mysql');
 const connection = require('./database/connection');
 const userRouter = require('./routes/user');
+const commentRouter = require('./routes/comments');
 
 
 const app = express();
@@ -25,6 +26,10 @@ app.use((req,res,next) =>{
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
+//user authentication api
 app.use('/api/auth', userRouter);
+
+//comments api
+app.use('/api/comments',commentRouter);
 //export app as module
 module.exports = app;

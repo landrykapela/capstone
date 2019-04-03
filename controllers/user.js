@@ -34,14 +34,25 @@ exports.login = (req,res,next)=>{
   console.log("query email: ");
   console.log(req.body);
   let password = req.body.password;
-  let options = {conditions:[{variable:"email",operation:"=",value:email}]};
+  let conditions = [{variable:"email",operation:"=",value:email}];
   let con = db.connect();
-  db.findSingleRecord(con,options,"user")
+  db.findSingleRecord(con,"user",conditions)
   .then((record)=>{
     let userJsonString = JSON.stringify(record[0]);
     let userJsonObject = JSON.parse(userJsonString);
     let user = new User(userJsonObject);
-    res.status(200).send();
+    bcrypt.compare(password,user.password)
+    .then((verified)=>{
+      const token = jwt.sign({userId:user.id},'secret_random',{expiresIn:'24'});
+      console.log("token: "+token);
+      let result = {userId:user.id,token:token};
+      res.status(200).json({result:result});
+    })
+    .catch((error)=>{
+      console.error(error);
+      let err = "Incorrect password";
+      res.status(400).json({error:err});
+    });
   })
   .catch((error)=>{
     console.error(error);
@@ -51,7 +62,7 @@ exports.login = (req,res,next)=>{
 exports.updateUser = (req,res,next) =>{
   let con = db.connect();
   let data = {role:1,lastLoggedInAt:new Date().getTime()};
-  let conditions = [{id:req.params.id,email:"'"+req.body.email+"'"},["=","="],["","&&"]];
+  let conditions = [{variable:"id",operation:"=",value:req.params.id},{variable:"email",operation:"=",required:true,value:"'"+req.body.email+"'"}];
   db.updateRecord(con,"user",data,conditions)
   .then((result)=>{
     console.log(result);
@@ -59,9 +70,11 @@ exports.updateUser = (req,res,next) =>{
   })
   .catch((error)=>{
     console.error(error);
-    res.status(400).json({error:error});
+    let err = "Could not update user records!";
+    res.status(400).json({error:err});
   })
 }
+
 exports.getUsers = (req,res,next) =>{
   // let con = db.connect();
   // db.createTable(con,{tableName: "user",fields:[{name:"email",type: "varchar",field_size: 255,required: true, unique: true},{name:"role",type: "int",field_size:1,required: true,default:0},{name: "password",type: "varchar",field_size: 255,required: true},{name: "lastLoggedInAt",type: "bigint",},{name:"createdAt",type:"bigint"}]});
