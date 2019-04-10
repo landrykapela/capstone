@@ -100,3 +100,7 @@ describe('CREATE NEW COMMENT', (done)=>{
     done();
   });
 });
+
+after(()=>{
+  process.exit(0);
+})
