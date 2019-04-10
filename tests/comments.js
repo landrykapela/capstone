@@ -24,9 +24,11 @@ describe('GET ALL COMMENTS', (done)=>{
       it('should return 200 OK with an array of comments', (done)=>{
         request(app)
           .get('/api/comments')
-          .expect(200,done);
+          .end((err,res)=>{
+            expect(res.statusCode).to.equal(200);
+          });
+          done();
       });
-      done();
 });
 
 //second test api to get single comment using id
