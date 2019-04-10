@@ -55,7 +55,7 @@ describe('USER LOGIN',function(done){
 **/
 describe('USER SIGNUP', (done)=>{
   it('should return a 201 Created', (done)=>{
-    let userData = {email:'testUser4@capstone.com',password:'testpassword'};
+    let userData = {email:'testUser5@capstone.com',password:'testpassword'};
     request(app)
     .post('/api/auth/signup')
     .send(userData)
@@ -73,7 +73,7 @@ describe('USER SIGNUP', (done)=>{
 **/
 
 describe('UPDATE USER', (done)=>{
-  let user_id = 4;
+  let user_id = 5;
   let data = {role:1,email:'testUser2@capstone.com'};
   it('should return 201 created', (done)=>{
     request(app)

@@ -26,6 +26,7 @@ describe('GET ALL COMMENTS', (done)=>{
           .get('/api/comments')
           .expect(200,done);
       });
+      done();
 });
 
 //second test api to get single comment using id
