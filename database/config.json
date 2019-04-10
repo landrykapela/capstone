@@ -1,10 +1,10 @@
 {
 "database":
   {
-    "DB_HOST":"localhost",
-    "DB_USER":"root",
+    "DB_HOST":"db4free.net",
+    "DB_USER":"landrykapela",
     "DB_NAME":"capstone_db",
-    "DB_PWD":"root",
-    "DB_PORT":8889
+    "DB_PWD":"nopassword",
+    "DB_PORT":3306
   }
 }
