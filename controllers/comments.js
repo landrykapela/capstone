@@ -18,8 +18,9 @@ exports.postComment = (req,res,next)=>{
         // res.status(201).json({result:jsonObject});
       db.insertSingleRecord(con,tableName,commentObj)
       .then(()=>{
-          console.log("Query was successful");
-          res.status(201).json({message:"Query was successful"});
+        let msg = "Comment was successfully posted";
+          console.log(msg);
+          res.status(201).json({message:msg});
       })
       .catch((error)=>{
         console.error(error);
@@ -62,7 +63,8 @@ exports.getCommentById = (req, res, next) =>{
   //retrieve single record
   db.findSingleRecord(con,"comments",conditions)
   .then((comment)=>{
-    console.log(comment[0]);
+    console.log("comment...");
+    console.log(comment);
     db.findManyRecords(con,"comments",[],{order_by:"timestamp",order:"asc"},[{variable:"parent",operation:"=",value:comment_id}])
     .then((result)=>{
       if(result.length == 1) result = result[0];
@@ -72,8 +74,8 @@ exports.getCommentById = (req, res, next) =>{
       comment[0].replies = jsonObject;
       res.status(200).json({comment:comment});
     })
-    .catch((error)=>{
-      console.error(error);
+    .catch(()=>{
+
       let err = "Could not retrieve comment replies";
       comment[0].replies = err;
       res.status(200).json({comment:comment});
@@ -120,7 +122,7 @@ exports.deleteComment = (req,res,next)=>{
 //controller for getting all comments
 exports.getAllComments = (req,res,next)=>{
   let con = db.connect();
-  db.findAllRecords(con,"comments",[],{order_by:"timestamp",order:"desc"})
+  db.findManyRecords(con,"comments",[],{order_by:"timestamp",order:"desc"},[{variable:"parent",operation:"=",value:"-1"}])
     .then((result)=>{
       // console.log(result);
       if(result.length == 1) result = result[0];

@@ -10,7 +10,7 @@ module.exports = (req,res,next) =>{
 		console.log(token);
 		let decodedToken = jwt.verify(token, 'secret_random');
 		// console.log("verifying token...");
-		// console.log(decodedToken);
+		console.log(decodedToken);
 		let userId = decodedToken.userId;
 
 
@@ -25,8 +25,8 @@ module.exports = (req,res,next) =>{
 
 	}
 	catch{
-		console.log("Braaaaapt");
+		
 		let error = "Invalid Request";
-		res.status(401).json({error: error});
+		res.status(400).json({error: error});
 	}
 };

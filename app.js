@@ -9,7 +9,7 @@ const commentRouter = require('./routes/comments');
 const app = express();
 
 // //initiate connection to mysql database
-// const con = connection.connect();
+connection.connect();
 // connection.createTable(con,{tableName: "user",fields:[{name:"email",type: "varchar",field_size: 255,required: true, unique: true},{name:"role",type: "int",field_size:10,required: true,default:0},{name: "password",type: "varchar",field_size: 255,required: true},{name: "lastLoggedInAt",type: "timestamp"},{name:"createdAt",type:"timestamp"}]});
 
 // connection.findSingleRecord(con,{conditions:[{variable:"email",operation: "=",value:"email@domain.com"}]},"user");

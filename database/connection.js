@@ -2,14 +2,17 @@ const db = require('mysql');
 
 //initiate connection to mysql database
 exports.connect = () =>{
-	return con = db.createConnection({host: "localhost", user: "root", password: "root", database: "capstone_db", port: 8889});
+	con = db.createConnection({host: "localhost", user: "root", password: "root", database: "capstone_db", port: 8889});
+	if(!con) throw "Not connected to db at localhost";
+	console.log("Successfully connected to localhost db");
+	return con;
 };
 
 //check if table EXISTS
 exports.tableExists = (con,tableName) =>{
 	return new Promise((resolve,reject)=>{
 		let sql = "SELECT * FROM information_schema.tables WHERE table_schema = 'capstone_db' AND table_name = '" + tableName +"' LIMIT 1";
-		console.log(sql);
+
 		con.query(sql, (error,result)=>{
 			if(error) reject(error);
 			else{
@@ -111,7 +114,7 @@ exports.findManyRecords = (con,table,fields,options,conditions) => {
 			let condition_string = " ";
 			if(conditions){
 				for(let i=0; i< conditions.length; i++){
-					condition_string += "(" + conditions[i].variable + conditions[i].operation + (typeof conditions[i].value === 'string' ? "'" + conditions[i].value + "'" : conditions[i].value) + ")";
+					condition_string += "WHERE " + "(" + conditions[i].variable + conditions[i].operation + (typeof conditions[i].value === 'string' ? "'" + conditions[i].value + "'" : conditions[i].value) + ")";
 					let next = conditions[i+1];
 					if(next){
 							console.log(next);
@@ -125,7 +128,8 @@ exports.findManyRecords = (con,table,fields,options,conditions) => {
 						}
 					}
 			}
-			let sql = "SELECT " + field_string + " FROM " + table + " WHERE " + condition_string + option_string;
+			let sql = "SELECT " + field_string + " FROM " + table + condition_string + option_string;
+
 			con.query(sql,(error,result)=>{
 				if(error) reject(error);
 				else resolve(result);
@@ -190,6 +194,7 @@ exports.insertSingleRecord = (con,table,data) =>{
 			let sql = "INSERT INTO " + table + fields + "VALUES " + values;
 
 			con.query(sql,(error,result)=>{
+				console.log(result);
 				if(error) reject(error);
 				resolve(result);
 			});
@@ -232,7 +237,9 @@ exports.updateRecord = (con, table,data,conditions) =>{
 			}
 			sql += x;
 			sql += " WHERE " + y;
-			con.query(sql,(result)=>{
+			console.log(sql);
+			con.query(sql,(error,result)=>{
+				console.log("connection result:" + error);
 				resolve(result);
 			});
 		});

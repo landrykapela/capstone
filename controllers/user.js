@@ -31,8 +31,7 @@ exports.signup = (req,res,next)=>{
 exports.login = (req,res,next)=>{
   // req.body.email = JSON.parse(req.body.email);
   let email = req.body.email;
-  console.log("query email: ");
-  console.log(req.body);
+  
   let password = req.body.password;
   let conditions = [{variable:"email",operation:"=",value:email}];
   let con = db.connect();
@@ -43,10 +42,18 @@ exports.login = (req,res,next)=>{
     let user = new User(userJsonObject);
     bcrypt.compare(password,user.password)
     .then((verified)=>{
-      const token = jwt.sign({userId:user.id},'secret_random',{expiresIn:'24'});
-      console.log("token: "+token);
-      let result = {userId:user.id,token:token};
-      res.status(200).json({result:result});
+      if(verified){
+        const token = jwt.sign({userId:user._id},'secret_random',{expiresIn:'24'});
+        console.log("user token: "+token);
+        let result = {userId:user._id,token:token};
+        // res.redirect('/pan')
+        res.status(200).json({result:result});
+      }
+      else{
+        let err = "Incorrect password";
+        console.log(err);
+        res.status(400).json({error:err});
+      }
     })
     .catch((error)=>{
       console.error(error);
@@ -56,7 +63,8 @@ exports.login = (req,res,next)=>{
   })
   .catch((error)=>{
     console.error(error);
-    res.status(400).json({error:error});
+    let err = "User does not exist!";
+    res.status(400).json({error:err});
   })
 }
 exports.updateUser = (req,res,next) =>{
