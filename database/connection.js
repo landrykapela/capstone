@@ -1,10 +1,13 @@
 const db = require('mysql');
 
+//database configurations
+const config = require('./config.json').database;
+
 //initiate connection to mysql database
 exports.connect = () =>{
-	con = db.createConnection({host: "localhost", user: "root", password: "root", database: "capstone_db", port: 8889});
+	con = db.createConnection({host: config.DB_HOST, user: config.DB_USER, password: config.DB_PWD, database: config.DB_NAME, port: config.DB_PORT});
 	if(!con) throw "Not connected to db at localhost";
-	console.log("Successfully connected to localhost db");
+	console.log("Successfully connected to localhost db: "+config.DB_HOST);
 	return con;
 };
 
