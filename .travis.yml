@@ -1,5 +1,8 @@
 language: node_js
 node_js:
-  - "10.15.0"
+  - "stable"
 script: npm run coverage
+cache:
+  directories:
+    - 'node_modules'
 after_success: 'npm run coveralls'

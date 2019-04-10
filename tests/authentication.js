@@ -55,7 +55,7 @@ describe('USER LOGIN',function(done){
 **/
 describe('USER SIGNUP', (done)=>{
   it('should return a 201 Created', (done)=>{
-    let userData = {email:'testUser3@capstone.com',password:'testpassword'};
+    let userData = {email:'testUser4@capstone.com',password:'testpassword'};
     request(app)
     .post('/api/auth/signup')
     .send(userData)
