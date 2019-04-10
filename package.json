@@ -4,7 +4,8 @@
   "description": "This is a simple project that intends to assess learners on the concepts of Object-Oriented",
   "main": "server.js",
   "scripts": {
-    "test": "node_modules/mocha/bin/mocha ./tests"
+    "test": "node_modules/mocha/bin/mocha ./tests",
+    "coverage": "node node_modules/.bin/istanbul cover _mocha -- -R spec"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,8 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
+    "coveralls": "^3.0.3",
+    "istanbul": "^0.4.5",
     "mocha": "^6.0.2",
     "superagent": "^5.0.2",
     "supertest": "^4.0.2"
