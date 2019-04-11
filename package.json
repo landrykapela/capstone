@@ -4,8 +4,9 @@
   "description": "This is a simple project that intends to assess learners on the concepts of Object-Oriented",
   "main": "server.js",
   "scripts": {
-    "test": "node_modules/mocha/bin/mocha ./tests",
-    "coverage": "node_modules/.bin/istanbul cover npm test -- -R spec"
+    "test": "node_modules/.bin/_mocha ./tests",
+    "coverage": "node_modules/.bin/istanbul cover npm test -- -R spec",
+    "coveralls": "npm run coverage -- --report lcovonly && cat ./coverage/lcov.info | coveralls"
   },
   "repository": {
     "type": "git",
