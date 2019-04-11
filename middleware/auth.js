@@ -23,7 +23,11 @@ module.exports = (req,res,next) =>{
 		}
 
 	}
+
 	catch(err){
-		res.status(400).json({error: "Invalie Request"});
+		console.log(err);
+		let error = "Invalid Request";
+		res.status(400).json({error: error});
+
 	}
 };
