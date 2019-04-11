@@ -4,12 +4,9 @@ const User = require('./user');
 class Moderator extends User {
 	constructor(data){
 	super(data);
-
-		this.canDeleteAnyComment = this.canDeleteAnyComment.bind(this);
-
 	}
-	canDeleteAnyComment(){
-		return true;
+	deleteComment(id){
+		alert("This will delete comment with ID: "+id);
 	}
 
 }
