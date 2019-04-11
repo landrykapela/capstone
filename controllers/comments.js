@@ -12,10 +12,6 @@ exports.postComment = (req,res,next)=>{
   let tableName = "comments";
   db.tableExists(con,tableName)
     .then((result)=>{
-      let jsonString = JSON.stringify(result[0]);
-      let jsonObject = JSON.parse(jsonString);
-        // console.log(jsonObject);
-        // res.status(201).json({result:jsonObject});
       db.insertSingleRecord(con,tableName,commentObj)
       .then(()=>{
         let msg = "Comment was successfully posted";
@@ -33,26 +29,27 @@ exports.postComment = (req,res,next)=>{
          let err = "An error occurred, please report to the site administrator";
          res.status(400).json({error:err});
        }
-      db.createTable(con,{tableName: tableName,fields:[{name:"message",type: "varchar",field_size: 1024,required: true},{name:"author",type: "int",field_size:10,required: true},{name: "parent",type: "int",field_size: 10,default:-1},{name: "timestamp",type: "bigint"}]})
-      .then((result)=>{
-        db.insertSingleRecord(con,tableName,commentObj)
-        .then(()=>{
-            console.log("Query was successful");
-            res.status(201).json({message:"Query was successful"});
-        })
-        .catch((error)=>{
-          console.error(error);
-          let err = "An error occurred while creating new record";
-          res.status(400).json({error:err});
-        });
-      })
-      .catch((error)=>{
-        console.error(error);
-        let err = "An error occurred while creating table comments";
-        res.status(400).json({error:err});
-      })
+       else{
+         db.createTable(con,{tableName: tableName,fields:[{name:"message",type: "varchar",field_size: 1024,required: true},{name:"author",type: "int",field_size:10,required: true},{name: "parent",type: "int",field_size: 10,default:-1},{name: "timestamp",type: "bigint"}]})
+         .then((result)=>{
+           db.insertSingleRecord(con,tableName,commentObj)
+           .then(()=>{
+               console.log("Query was successful");
+               res.status(201).json({message:"Query was successful"});
+           })
+           .catch((error)=>{
+             console.error(error);
+             let err = "An error occurred while creating new record";
+             res.status(400).json({error:err});
+           });
+         })
+         .catch((error)=>{
+           console.error(error);
+           let err = "An error occurred while creating table comments";
+           res.status(400).json({error:err});
+         });
+       }
      });
-
 }
 
 //conroller function to get comment using specified id;
@@ -63,8 +60,6 @@ exports.getCommentById = (req, res, next) =>{
   //retrieve single record
   db.findSingleRecord(con,"comments",conditions)
   .then((comment)=>{
-    console.log("comment...");
-    console.log(comment);
     db.findManyRecords(con,"comments",[],{order_by:"timestamp",order:"asc"},[{variable:"parent",operation:"=",value:comment_id}])
     .then((result)=>{
       if(result.length == 1) result = result[0];
@@ -75,7 +70,6 @@ exports.getCommentById = (req, res, next) =>{
       res.status(200).json({comment:comment});
     })
     .catch(()=>{
-
       let err = "Could not retrieve comment replies";
       comment[0].replies = err;
       res.status(200).json({comment:comment});
