@@ -1,4 +1,4 @@
-const Comment = require('../models/comment');
+
 const db = require('../database/connection');
 
 exports.postComment = (req,res,next)=>{
@@ -6,7 +6,7 @@ exports.postComment = (req,res,next)=>{
   let message= req.body.message;
   let timestamp = new Date().getTime();
   let parent = (!req.body.parent) ? -1 : req.body.parent;
-  let commentObj = {author:author,message:message,timestamp: timestamp,parent:parent};
+  let commentObj = {commentId:null,author:author,message:message,timestamp: timestamp,parent:parent};
   let con = db.connect();
 
   let tableName = "comments";
