@@ -10,4 +10,3 @@ class Moderator extends User {
 	}
 
 }
-module.exports = Moderator;

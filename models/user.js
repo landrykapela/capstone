@@ -7,4 +7,4 @@ class User {
 		this.password = data.password;
 		this.lastLoggedInAt = data.lastLoggedInAt;
 }
-module.exports = User;
+}
